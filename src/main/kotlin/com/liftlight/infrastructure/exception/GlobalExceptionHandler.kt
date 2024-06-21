@@ -19,7 +19,7 @@ class GlobalExceptionHandler {
         val errors = exception.bindingResult
             .allErrors
             .mapNotNull { it.defaultMessage }
-        return ResponseEntity.status(400).body(errors)
+        return ResponseEntity.badRequest().body(errors)
     }
 
     @ExceptionHandler(CustomException::class)
@@ -29,16 +29,16 @@ class GlobalExceptionHandler {
             message = exception.errorCode.message
         )
         log.error(exception.message, exception)
-        return ResponseEntity.status(400).body(errorResponse)
+        return ResponseEntity.badRequest().body(errorResponse)
     }
 
     @ExceptionHandler(Exception::class)
-    fun undefinedException(exception: Exception): ResponseEntity<ErrorResponse> {
+    fun handleUndefinedException(exception: Exception): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             code = ErrorCode.UNDEFINED_EXCEPTION.code,
-            message = exception.message?: "알 수 없는 오류가 발생했습니다."
+            message = exception.message ?: "알 수 없는 오류가 발생했습니다."
         )
         log.error(exception.message, exception)
-        return ResponseEntity.status(400).body(errorResponse)
+        return ResponseEntity.badRequest().body(errorResponse)
     }
 }
