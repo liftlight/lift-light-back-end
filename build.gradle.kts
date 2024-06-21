@@ -31,6 +31,10 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.slf4j:slf4j-api")
+    implementation("org.projectlombok:lombok")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    implementation("org.springframework.security:spring-security-core")
 }
 
 kotlin {
