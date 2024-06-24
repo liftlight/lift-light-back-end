@@ -16,11 +16,12 @@ class UserSignUpService(
 ) {
 
     @Transactional
-    fun registerUser(userSignUpRequest: UserSignUpRequest): UserEntity {
+    fun registerUser(userSignUpRequest: UserSignUpRequest) {
         checkIfItsExistingUSer(userSignUpRequest.email)
         val encodedPassword = passwordEncoder.encode(userSignUpRequest.password)
-        val userEntity = createUserWithRequest(userSignUpRequest, encodedPassword)
-        return userRepository.save(userEntity)
+        userRepository.save(
+            createUserWithRequest(userSignUpRequest, encodedPassword)
+        )
     }
 
     private fun createUserWithRequest(
