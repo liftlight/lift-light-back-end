@@ -1,6 +1,6 @@
 package com.liftlight.infrastructure.filters
 
-import com.liftlight.auth.model.dto.TokenIssuanceDto
+import com.liftlight.auth.model.dto.TokenIssuanceDTO
 import com.liftlight.user.application.commands.UserDetailsServiceImpl
 import com.liftlight.user.enums.UserRole
 import io.jsonwebtoken.Claims
@@ -38,7 +38,7 @@ class JwtProvider(private val userDetailsService: UserDetailsServiceImpl) {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKeyString))
     }
 
-    fun issueAccessToken(tokenIssuanceDto: TokenIssuanceDto): String {
+    fun issueAccessToken(tokenIssuanceDto: TokenIssuanceDTO): String {
         val claims: Claims = Jwts.claims().setSubject(tokenIssuanceDto.id.toString())
         claims["email"] = tokenIssuanceDto.email
         claims["userRole"] = tokenIssuanceDto.userRole
