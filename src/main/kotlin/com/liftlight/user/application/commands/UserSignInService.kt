@@ -3,8 +3,10 @@ package com.liftlight.user.application.commands
 import com.liftlight.auth.model.dto.TokenIssuanceDTO
 import com.liftlight.infrastructure.RedisService
 import com.liftlight.infrastructure.exception.CustomException
-import com.liftlight.infrastructure.exception.ErrorCode.USER_NOT_FOUND
+import com.liftlight.infrastructure.exception.ErrorCode.*
 import com.liftlight.infrastructure.filters.JwtProvider
+import com.liftlight.user.enums.UserStatus
+import com.liftlight.user.enums.UserStatus.*
 import com.liftlight.user.model.dtos.UserDTO
 import com.liftlight.user.model.entities.UserEntity
 import com.liftlight.user.presentation.request.UserSignInRequest
@@ -24,9 +26,19 @@ class UserSignInService(
     fun signInUser(userSignUpRequest: UserSignInRequest): UserDTO {
         val user = getUser(userSignUpRequest.email)
         validatePassword(userSignUpRequest, user)
-        val tokens = getTokens(TokenIssuanceDTO.from(user))
-        storeRefreshToken(user.email, tokens.second)
-        return UserDTO.fromEntity(user, tokens.first, tokens.second)
+        validateUserStatus(user.status)
+        val tokenPair = getTokens(TokenIssuanceDTO.from(user))
+        storeRefreshToken(user.email, tokenPair.second)
+        return UserDTO.fromEntity(user, tokenPair.first, tokenPair.second)
+    }
+
+    private fun validateUserStatus(userStatus: UserStatus) {
+        when (userStatus) {
+            PENDING -> throw CustomException(USER_NOT_VERIFIED)
+            DELETED -> throw CustomException(DELETED_USER)
+            INACTIVE -> throw CustomException(INACTIVE_USER)
+            ACTIVE -> return
+        }
     }
 
     private fun storeRefreshToken(userEmail: String, refreshToken: String) {
