@@ -1,6 +1,6 @@
 package com.liftlight.user.application.commands
 
-import com.liftlight.auth.model.dto.TokenIssuanceDTO
+import com.liftlight.auth.domain.dto.TokenIssuanceDTO
 import com.liftlight.infrastructure.RedisService
 import com.liftlight.infrastructure.exception.CustomException
 import com.liftlight.infrastructure.exception.ErrorCode.*

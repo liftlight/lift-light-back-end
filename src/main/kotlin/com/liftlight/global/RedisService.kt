@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Redis 서비스
  */
-@Slf4j
 @Service
-@RequiredArgsConstructor
 class RedisService(private val stringRedisTemplate: RedisTemplate<String, String>) {
 
     fun saveKeyAndValue(key: String, value: String, expireTime: Int) {
