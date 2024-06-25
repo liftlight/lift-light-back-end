@@ -17,20 +17,20 @@ class JwtAuthenticationProvider(
 
     @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication?): Authentication {
-        return authenticate(authentication as JwtToken?)
-    }
+        if (authentication == null) {
+            throw IllegalArgumentException("Authentication is null")
+        }
+        val token = authentication as JwtToken
 
-    override fun supports(authentication: Class<*>): Boolean {
-        return (JwtToken::class.java.isAssignableFrom(authentication))
-    }
-
-    fun authenticate(authentication: JwtToken): Authentication {
-        val jwtToken: String = authentication.credentials
+        val jwtToken: String = token.credentials
         val response: TokenParserResponse = tokenService.parserToken(jwtToken)
 
         return JwtToken(jwtToken, response.username, authorities(response))
     }
 
+    override fun supports(authentication: Class<*>): Boolean {
+        return (JwtToken::class.java.isAssignableFrom(authentication))
+    }
 
     private fun authorities(response: TokenParserResponse): List<SimpleGrantedAuthority> {
         return response.roles

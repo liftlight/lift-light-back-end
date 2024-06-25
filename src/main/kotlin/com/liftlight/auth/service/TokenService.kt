@@ -15,6 +15,8 @@ import java.time.ZoneId
 import java.util.*
 import javax.crypto.SecretKey
 
+private const val AUTHORITIES_KEY = "roles"
+
 @Service
 class TokenService(
     @Value("\${jwt.token.secret-key}") key: String,
@@ -30,8 +32,8 @@ class TokenService(
         return Jwts.builder()
             .addClaims(createClaims(username, authorities.toCollection(ArrayList())))
             .setIssuer(issuer)
-            .setIssuedAt(toDate(issuedAt))
-            .setExpiration(toDate(expiredAt))
+            .setIssuedAt(issuedAt.toDate())
+            .setExpiration(expiredAt.toDate())
             .signWith(key)
             .compact()
     }
@@ -65,23 +67,16 @@ class TokenService(
             ?.toList()
             ?: emptyList()
 
-
         return TokenParserResponse(username, roles)
     }
 
-    private fun createClaims(username: String, authorities: ArrayList<GrantedAuthority>): Claims {
-        val claims = Jwts.claims().setSubject(username)
-        claims[AUTHORITIES_KEY] =
-            authorities.stream().map { obj: GrantedAuthority -> obj.toString() }.toList()
+    private fun createClaims(username: String, authorities: ArrayList<GrantedAuthority>): Claims =
+        Jwts.claims().setSubject(username)
+            .also {
+                it[AUTHORITIES_KEY] =
+                    authorities.stream().map { obj: GrantedAuthority -> obj.toString() }.toList()
+            }
 
-        return claims
-    }
+    private fun LocalDateTime.toDate() = Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
 
-    private fun toDate(dateTime: LocalDateTime): Date {
-        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant())
-    }
-
-    companion object {
-        private const val AUTHORITIES_KEY = "roles"
-    }
 }
