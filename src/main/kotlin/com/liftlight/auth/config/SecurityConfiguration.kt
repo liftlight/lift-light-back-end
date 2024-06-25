@@ -66,18 +66,11 @@ class SecurityConfiguration(
         .build()
 
 
-    private fun jwtTokenIssueFilter(authenticationManager: AuthenticationManager): JwtTokenIssueFilter {
-        val filter: JwtTokenIssueFilter =
-            JwtTokenIssueFilter(AUTHENTICATION_URL, objectMapper, successHandler, failureHandler)
-        filter.setAuthenticationManager(authenticationManager)
-        return filter
-    }
+    private fun jwtTokenIssueFilter(authenticationManager: AuthenticationManager): JwtTokenIssueFilter = JwtTokenIssueFilter(AUTHENTICATION_URL, objectMapper, successHandler, failureHandler)
+        .also {  it.setAuthenticationManager(authenticationManager)}
 
-    private fun jwtTokenAuthenticationFilter(authenticationManager: AuthenticationManager): JwtTokenAuthenticationFilter {
-        val filter: JwtTokenAuthenticationFilter = JwtTokenAuthenticationFilter(API_ROOT_URL, failureHandler)
-        filter.setAuthenticationManager(authenticationManager)
-        return filter
-    }
+    private fun jwtTokenAuthenticationFilter(authenticationManager: AuthenticationManager): JwtTokenAuthenticationFilter = JwtTokenAuthenticationFilter(API_ROOT_URL, failureHandler)
+        .also { it.setAuthenticationManager(authenticationManager) }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
