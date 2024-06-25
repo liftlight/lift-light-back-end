@@ -39,6 +39,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    // docs
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+
     // 3rd party
     implementation("org.slf4j:slf4j-api")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
