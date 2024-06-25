@@ -1,8 +1,7 @@
 package com.liftlight.auth.service
 
-import com.liftlight.auth.domain.TokenParserResponse
 import com.liftlight.auth.domain.JwtToken
-import com.liftlight.auth.domain.Member
+import com.liftlight.auth.domain.TokenParserResponse
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -26,7 +25,7 @@ class JwtAuthenticationProvider(
     }
 
     fun authenticate(authentication: JwtToken): Authentication {
-        val jwtToken: String = authentication.getCredentials()
+        val jwtToken: String = authentication.credentials
         val response: TokenParserResponse = tokenService.parserToken(jwtToken)
 
         return JwtToken(jwtToken, response.username, authorities(response))

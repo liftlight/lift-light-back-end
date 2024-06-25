@@ -1,8 +1,8 @@
 package com.liftlight.auth.service
 
 import com.liftlight.auth.config.JwtExpiredTokenException
-import com.liftlight.auth.domain.TokenParserResponse
 import com.liftlight.auth.domain.Member.Role
+import com.liftlight.auth.domain.TokenParserResponse
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
@@ -14,7 +14,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import javax.crypto.SecretKey
-import kotlin.collections.ArrayList
 
 @Service
 class TokenService(

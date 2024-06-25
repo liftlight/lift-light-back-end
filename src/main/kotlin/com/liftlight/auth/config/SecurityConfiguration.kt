@@ -3,7 +3,6 @@ package com.liftlight.auth.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.liftlight.auth.application.filter.JwtTokenAuthenticationFilter
 import com.liftlight.auth.application.filter.JwtTokenIssueFilter
-import com.liftlight.auth.domain.Member
 import com.liftlight.auth.domain.Member.Role.ADMIN
 import com.liftlight.auth.domain.Member.Role.USER
 import com.liftlight.auth.service.JwtAuthenticationProvider
@@ -14,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -44,8 +42,14 @@ class SecurityConfiguration(
                     .requestMatchers("/api/say/admin").hasAnyRole(ADMIN.name)
                     .requestMatchers("/api/say/user").hasAnyRole(USER.name)
             }
-            .addFilterBefore(jwtTokenIssueFilter(authenticationManager), UsernamePasswordAuthenticationFilter::class.java)
-            .addFilterBefore(jwtTokenAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                jwtTokenIssueFilter(authenticationManager),
+                UsernamePasswordAuthenticationFilter::class.java
+            )
+            .addFilterBefore(
+                jwtTokenAuthenticationFilter(authenticationManager),
+                UsernamePasswordAuthenticationFilter::class.java
+            )
             .build()
 
     @Bean
@@ -54,16 +58,17 @@ class SecurityConfiguration(
         http: HttpSecurity,
         jwtTokenIssueProvider: JwtTokenIssueProvider?,
         jwtAuthenticationProvider: JwtAuthenticationProvider?
-    ): AuthenticationManager  = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+    ): AuthenticationManager = http.getSharedObject(AuthenticationManagerBuilder::class.java)
         .also {
             it.authenticationProvider(jwtAuthenticationProvider)
             it.authenticationProvider(jwtTokenIssueProvider)
         }
-            .build()
+        .build()
 
 
     private fun jwtTokenIssueFilter(authenticationManager: AuthenticationManager): JwtTokenIssueFilter {
-        val filter: JwtTokenIssueFilter = JwtTokenIssueFilter(AUTHENTICATION_URL, objectMapper, successHandler, failureHandler)
+        val filter: JwtTokenIssueFilter =
+            JwtTokenIssueFilter(AUTHENTICATION_URL, objectMapper, successHandler, failureHandler)
         filter.setAuthenticationManager(authenticationManager)
         return filter
     }
