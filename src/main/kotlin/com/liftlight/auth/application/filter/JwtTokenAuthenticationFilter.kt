@@ -23,38 +23,31 @@ class JwtTokenAuthenticationFilter(matcher: String, failureHandler: Authenticati
         this.setAuthenticationFailureHandler(failureHandler)
     }
 
-    @Throws(AuthenticationException::class)
-    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
-        val tokenPayload = extractToken(request.getHeader(HttpHeaders.AUTHORIZATION))
+    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication =
+        request.getHeader(HttpHeaders.AUTHORIZATION)
+            .takeUnless { header -> isNull(header) || !header.startsWith("Bearer ") }
+            ?.let { JwtToken(it) }
+            ?.let { authenticationManager.authenticate(it) }
+            ?: let { throw BadCredentialsException("Invalid token") }
 
-        return authenticationManager.authenticate(JwtToken(tokenPayload))
-    }
-
-    @Throws(IOException::class, ServletException::class)
     override fun successfulAuthentication(
-        request: HttpServletRequest?, response: HttpServletResponse?, chain: FilterChain,
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        chain: FilterChain,
         authentication: Authentication?
-    ) {
-        val context = SecurityContextHolder.createEmptyContext()
-        context.authentication = authentication
-
-        SecurityContextHolder.setContext(context)
-        chain.doFilter(request, response)
-    }
+    ) = SecurityContextHolder.createEmptyContext()
+        .also { it.authentication = authentication }
+        .let { context ->
+            SecurityContextHolder.setContext(context)
+            chain.doFilter(request, response)
+        }
 
     @Throws(IOException::class, ServletException::class)
     override fun unsuccessfulAuthentication(
         request: HttpServletRequest?, response: HttpServletResponse?,
         authenticationException: AuthenticationException?
-    ) {
-        SecurityContextHolder.clearContext()
-        failureHandler.onAuthenticationFailure(request, response, authenticationException)
-    }
+    ) = SecurityContextHolder.clearContext()
+        .let { failureHandler.onAuthenticationFailure(request, response, authenticationException) }
 
-    private fun extractToken(tokenPayload: String): String {
-        if (isNull(tokenPayload) || !tokenPayload.startsWith("Bearer ")) {
-            throw BadCredentialsException("Invalid token")
-        }
-        return tokenPayload.replace("Bearer ", "")
-    }
+
 }
