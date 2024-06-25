@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.WebAttributes
@@ -26,17 +25,9 @@ class JwtTokenIssueSuccessHandler(
 
     @Throws(IOException::class)
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        authentication: Authentication?
-    ) {
-        onAuthenticationSuccess(request, response, authentication as UsernamePasswordAuthenticationToken?)
-    }
-
-    @Throws(IOException::class)
-    private fun onAuthenticationSuccess(
-        request: HttpServletRequest, response: HttpServletResponse,
-        authentication: UsernamePasswordAuthenticationToken
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authentication: Authentication
     ) {
         val username = authentication.principal.toString()
         val authorities: List<SimpleGrantedAuthority> = authentication.authorities
@@ -54,4 +45,5 @@ class JwtTokenIssueSuccessHandler(
             session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)
         }
     }
+
 }

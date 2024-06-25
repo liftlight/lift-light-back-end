@@ -12,20 +12,24 @@ import java.io.IOException
 
 
 @Component
-class DefaultAuthenticationFailureHandler : AuthenticationFailureHandler {
-    private val objectMapper: ObjectMapper? = null
+class DefaultAuthenticationFailureHandler(
+    private val objectMapper: ObjectMapper
+): AuthenticationFailureHandler {
 
-    @Throws(IOException::class)
     override fun onAuthenticationFailure(
-        request: HttpServletRequest?, response: HttpServletResponse,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
         exception: AuthenticationException
     ) {
         response.status = HttpStatus.UNAUTHORIZED.value()
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"
 
-        objectMapper!!.writeValue(response.writer, exception.message?.let { ErrorResponse(it) })
+        objectMapper.writeValue(response.writer, exception.message?.let { ErrorResponse(it) })
     }
 
-    private data class ErrorResponse(val message: String)
+}
+
+private data class ErrorResponse(val message: String){
+
 }
