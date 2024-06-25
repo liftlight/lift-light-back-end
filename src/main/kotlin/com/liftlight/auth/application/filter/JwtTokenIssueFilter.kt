@@ -43,7 +43,7 @@ class JwtTokenIssueFilter(
     }
 }
 
-data class SIgnIn(
+private data class SIgnIn(
     val username: String, val password: String
 ) {
     init {

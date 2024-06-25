@@ -27,5 +27,5 @@ class DefaultAuthenticationFailureHandler : AuthenticationFailureHandler {
         objectMapper!!.writeValue(response.writer, exception.message?.let { ErrorResponse(it) })
     }
 
-    data class ErrorResponse(val message: String)
+    private data class ErrorResponse(val message: String)
 }

@@ -27,7 +27,8 @@ class JwtTokenIssueSuccessHandler(
 
     @Throws(IOException::class)
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest?, response: HttpServletResponse?,
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
         authentication: Authentication?
     ) {
         onAuthenticationSuccess(request, response, authentication as UsernamePasswordAuthenticationToken?)
@@ -43,12 +44,11 @@ class JwtTokenIssueSuccessHandler(
             .map {SimpleGrantedAuthority(it.authority)  }
             .toList()
 
-
-        val tokenResponse: TokenValue = TokenValue(tokenService.createToken(username, authorities))
+        val tokenResponse = TokenValue(tokenService.createToken(username, authorities))
 
         response.status = HttpStatus.OK.value()
         response.contentType = MediaType.APPLICATION_JSON_VALUE
-        objectMapper!!.writeValue(response.writer, tokenResponse)
+        objectMapper.writeValue(response.writer, tokenResponse)
 
         val session = request.getSession(false)
         if (!isNull(session)) {
