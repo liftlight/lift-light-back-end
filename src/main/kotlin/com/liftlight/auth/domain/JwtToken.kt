@@ -4,10 +4,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import java.util.*
 
-@JvmInline
-value class TokenValue(
-    private val token: String
-)
+
 
 data class JwtToken(
     private val jwtToken: String,
