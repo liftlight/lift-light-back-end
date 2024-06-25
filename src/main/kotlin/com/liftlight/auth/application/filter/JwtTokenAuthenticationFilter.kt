@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextHolder.setContext
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import java.util.Objects.isNull
@@ -37,10 +38,8 @@ class JwtTokenAuthenticationFilter(matcher: String, failureHandler: Authenticati
         authentication: Authentication?
     ) = SecurityContextHolder.createEmptyContext()
         .also { it.authentication = authentication }
-        .let { context ->
-            SecurityContextHolder.setContext(context)
-            chain.doFilter(request, response)
-        }
+        .also { context -> setContext(context) }
+        .let { chain.doFilter(request, response) }
 
     @Throws(IOException::class, ServletException::class)
     override fun unsuccessfulAuthentication(

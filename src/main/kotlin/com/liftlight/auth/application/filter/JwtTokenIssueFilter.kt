@@ -15,32 +15,23 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 
 class JwtTokenIssueFilter(
-    defaultFilterProcessesUrl: String,
+    private val defaultFilterProcessesUrl: String,
     private val objectMapper: ObjectMapper,
-    authenticationSuccessHandler: AuthenticationSuccessHandler?,
-    authenticationFailureHandler: AuthenticationFailureHandler?
+    private val authenticationSuccessHandler: AuthenticationSuccessHandler,
+    private val authenticationFailureHandler: AuthenticationFailureHandler
 ) : AbstractAuthenticationProcessingFilter(defaultFilterProcessesUrl) {
     init {
         this.setAuthenticationSuccessHandler(authenticationSuccessHandler)
         this.setAuthenticationFailureHandler(authenticationFailureHandler)
     }
 
-    @Throws(AuthenticationException::class, IOException::class)
-    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
-        if (!isPostMethod(request)) {
-            throw AuthMethodNotSupportedException("Authentication method not supported")
-        }
+    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication =
+        takeIf { HttpMethod.POST.name() == request.method }
+            ?.let { objectMapper.readValue(request.reader, SIgnIn::class.java) }
+            ?.let { UsernamePasswordAuthenticationToken.unauthenticated(it.username, it.password) }
+            ?.let { authenticationManager.authenticate(it) }
+            ?: let { throw AuthMethodNotSupportedException("Authentication method not supported") }
 
-        val loginRequest: SIgnIn = objectMapper.readValue(request.reader, SIgnIn::class.java)
-        val token =
-            UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username, loginRequest.password)
-
-        return authenticationManager.authenticate(token)
-    }
-
-    private fun isPostMethod(request: HttpServletRequest): Boolean {
-        return HttpMethod.POST.name() == request.method
-    }
 }
 
 private data class SIgnIn(
