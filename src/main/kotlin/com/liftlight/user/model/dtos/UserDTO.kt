@@ -13,20 +13,31 @@ data class UserDTO(
     var benchPress: Long,
     var deadLift: Long,
     var country: Country,
-    var profileImageUrl: String
-)
+    var profileImageUrl: String,
+    var accessToken: String,
+    var refreshToken: String
+) {
+    companion object {
+        fun fromEntity(
+            user: UserEntity,
+            accessToken: String,
+            refreshToken: String
+        ): UserDTO {
+            return UserDTO(
+                id = user.id ?: 0L,
+                nickName = user.nickName,
+                email = user.email,
+                rank = user.rank,
+                point = user.point,
+                squat = user.squat,
+                benchPress = user.benchPress,
+                deadLift = user.deadLift,
+                country = user.country,
+                profileImageUrl = user.profileImageUrl,
+                accessToken = accessToken,
+                refreshToken = refreshToken
 
-fun UserEntity.toDTO(): UserDTO {
-    return UserDTO(
-        id = this.id ?: 0L,
-        nickName = this.nickName,
-        email = this.email,
-        rank = this.rank,
-        point = this.point,
-        squat = this.squat,
-        benchPress = this.benchPress,
-        deadLift = this.deadLift,
-        country = this.country,
-        profileImageUrl = this.profileImageUrl
-    )
+            )
+        }
+    }
 }
