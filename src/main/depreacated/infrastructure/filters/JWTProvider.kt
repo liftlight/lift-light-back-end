@@ -1,6 +1,6 @@
 package com.liftlight.infrastructure.filters
 
-import com.liftlight.auth.model.dto.TokenIssuanceDTO
+import com.liftlight.auth.domain.dto.TokenIssuanceDTO
 import com.liftlight.user.application.commands.UserDetailsServiceImpl
 import com.liftlight.user.enums.UserRole
 import io.jsonwebtoken.Claims
