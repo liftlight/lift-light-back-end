@@ -19,8 +19,11 @@ jobs:
         distribution: 'adopt'
         java-version: '17'
 
-    - name: Build with Maven
-      run: mvn clean package
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build
 
     - name: Log in to Private Docker Registry
       run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
